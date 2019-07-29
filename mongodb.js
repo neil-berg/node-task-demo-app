@@ -138,17 +138,17 @@ MongoClient.connect(
     //   .catch(error => console.log(error));
 
     // Updating many
-    db.collection('tasks')
-      .updateMany(
-        { completed: false },
-        {
-          $set: {
-            completed: true
-          }
-        }
-      )
-      .then(result => console.log(result))
-      .catch(error => console.log(error));
+    // db.collection('tasks')
+    //   .updateMany(
+    //     { completed: false },
+    //     {
+    //       $set: {
+    //         completed: true
+    //       }
+    //     }
+    //   )
+    //   .then(result => console.log(result))
+    //   .catch(error => console.log(error));
 
     // ******************
     // DELETING DOCUMENTS
@@ -163,8 +163,8 @@ MongoClient.connect(
     //   .then(result => console.log(result))
     //   .catch(error => console.log(error));
 
-    db.collection('tasks')
-      .deleteOne({ description: 'Grocery shopping' })
-      .then(result => console.log(result));
+    // db.collection('tasks')
+    //   .deleteOne({ description: 'Grocery shopping' })
+    //   .then(result => console.log(result));
   }
 );
