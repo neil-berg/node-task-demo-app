@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -19,6 +20,7 @@ const userSchema = new mongoose.Schema({
   },
   email: {
     type: String,
+    unique: true,
     required: true,
     trim: true,
     lowercase: true,
@@ -35,16 +37,65 @@ const userSchema = new mongoose.Schema({
     minLength: 7,
     validate: password => {
       if (/password/i.test(password)) {
-        throw new Error('Password cannot contain the word password ');
+        throw new Error('Password cannot contain the word password');
       }
       if (password.length < 8) {
         throw new Error('Password must be at least 8 characters long');
       }
     }
-  }
+  },
+  tokens: [
+    {
+      token: {
+        type: String,
+        required: true
+      }
+    }
+  ]
 });
 
-// Hash passwords before saving/updating user
+// Instance methods (methods)
+userSchema.methods.generateAuthToken = async function() {
+  const user = this;
+  const token = jwt.sign({ _id: user._id.toString() }, 'benny');
+  user.tokens = user.tokens.concat({ token });
+  await user.save();
+  return token;
+};
+
+userSchema.methods.toJSON = function() {
+  const user = this;
+  const userObject = user.toObject();
+
+  // Remove password and tokens from the user profile
+  // that is sent back in the login response
+  // Note: res.send() calls JSON.stringify beind the scenes
+  delete userObject.password;
+  delete userObject.tokens;
+
+  return userObject;
+};
+
+// Model methods (statics)
+userSchema.statics.findByCredentials = async (email, password) => {
+  const user = await User.findOne({ email });
+
+  // User's email does not exist
+  if (!user) {
+    throw new Error('Unable to login');
+  }
+
+  const isMatch = await bcrypt.compare(password, user.password);
+
+  // Mismatch between existing email and password combo
+  if (!isMatch) {
+    throw new Error('Unable to login');
+  }
+
+  return user;
+};
+
+// Hash passwords before saving user password (new or existing)
 userSchema.pre('save', async function(next) {
   const user = this;
 
