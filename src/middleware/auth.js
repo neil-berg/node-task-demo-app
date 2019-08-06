@@ -13,6 +13,7 @@ const auth = async (req, res, next) => {
       throw new Error();
     }
 
+    // Adding on token and user properties to the request object
     req.token = token;
     req.user = user;
     next();

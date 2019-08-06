@@ -85,6 +85,8 @@ router.patch('/users/me', auth, async (req, res) => {
 router.delete('/users/me', auth, async (req, res) => {
   try {
     // Recall that auth returns req.user object
+    // Middleware occurs before remove() to delete tasks
+    // with this owner
     await req.user.remove();
     res.send(req.user);
   } catch (error) {
