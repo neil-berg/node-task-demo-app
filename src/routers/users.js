@@ -9,6 +9,7 @@ router.post('/users', async (req, res) => {
   try {
     const token = await user.generateAuthToken();
     await user.save();
+    // Token is sent back to store login creds on Postman
     res.status(201).send({ user, token });
   } catch (e) {
     res.status(400).send();

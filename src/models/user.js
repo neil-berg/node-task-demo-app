@@ -4,56 +4,61 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Task = require('./task');
 
-const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    trim: true
+const userSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true
+    },
+    age: {
+      type: Number,
+      default: 0,
+      validate: value => {
+        if (value < 0) {
+          throw new Error('Age must be a positive number');
+        }
+      }
+    },
+    email: {
+      type: String,
+      unique: true,
+      required: true,
+      trim: true,
+      lowercase: true,
+      validate: email => {
+        if (!validator.isEmail(email)) {
+          throw new Error('Invalid email');
+        }
+      }
+    },
+    password: {
+      type: String,
+      required: true,
+      trim: true,
+      minLength: 7,
+      validate: password => {
+        if (/password/i.test(password)) {
+          throw new Error('Password cannot contain the word password');
+        }
+        if (password.length < 8) {
+          throw new Error('Password must be at least 8 characters long');
+        }
+      }
+    },
+    tokens: [
+      {
+        token: {
+          type: String,
+          required: true
+        }
+      }
+    ]
   },
-  age: {
-    type: Number,
-    default: 0,
-    validate: value => {
-      if (value < 0) {
-        throw new Error('Age must be a positive number');
-      }
-    }
-  },
-  email: {
-    type: String,
-    unique: true,
-    required: true,
-    trim: true,
-    lowercase: true,
-    validate: email => {
-      if (!validator.isEmail(email)) {
-        throw new Error('Invalid email');
-      }
-    }
-  },
-  password: {
-    type: String,
-    required: true,
-    trim: true,
-    minLength: 7,
-    validate: password => {
-      if (/password/i.test(password)) {
-        throw new Error('Password cannot contain the word password');
-      }
-      if (password.length < 8) {
-        throw new Error('Password must be at least 8 characters long');
-      }
-    }
-  },
-  tokens: [
-    {
-      token: {
-        type: String,
-        required: true
-      }
-    }
-  ]
-});
+  {
+    timestamps: true
+  }
+);
 
 // Not stored in database, just a link between databases
 userSchema.virtual('tasks', {

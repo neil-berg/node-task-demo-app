@@ -20,13 +20,44 @@ router.post('/tasks', auth, async (req, res) => {
   }
 });
 
-// Read all tasks
+// GET /tasks
+//          ?completed={true|false|empty}
+//          &limit={#}
+//          &skip={#}
+//          &sortBy=createdAt:{desc|asc}
 router.get('/tasks', auth, async (req, res) => {
+  const queryConditions = {
+    owner: req.user._id
+  };
+
+  if (req.query.completed) {
+    queryConditions.completed = req.query.completed === 'true';
+  }
+
+  const sort = {};
+
+  if (req.query.sortBy) {
+    const [field, direction] = req.query.sortBy.split(':');
+    sort[field] = direction === 'asc' ? 1 : -1;
+  }
+
+  const options = {
+    limit: parseInt(req.query.limit),
+    skip: parseInt(req.query.skip),
+    sort
+  };
+
   try {
-    const tasks = await Task.find({ owner: req.user._id });
+    const tasks = await Task.find(queryConditions, null, options);
     // Alternatively, populate tasks virtually
     // Just make sure you send(req.user.tasks)
-    //await req.user.populate('tasks').execPopulate();
+    // await req.user
+    //   .populate({
+    //     path: 'tasks',
+    //     match: queryConditions
+    //   })
+    //   .execPopulate();
+    // res.send(req.user.tasks);
     if (!tasks) {
       return res.status(404).send();
     }
