@@ -46,6 +46,9 @@ const userSchema = new mongoose.Schema(
         }
       }
     },
+    avatar: {
+      type: Buffer
+    },
     tokens: [
       {
         token: {
@@ -80,11 +83,12 @@ userSchema.methods.toJSON = function() {
   const user = this;
   const userObject = user.toObject();
 
-  // Remove password and tokens from the user profile
+  // Remove password, tokens, and avatar (big size) from the user profile
   // that is sent back in the login response
   // Note: res.send() calls JSON.stringify beind the scenes
   delete userObject.password;
   delete userObject.tokens;
+  delete userObject.avatar;
 
   return userObject;
 };
