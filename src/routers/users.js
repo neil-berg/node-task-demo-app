@@ -4,6 +4,10 @@ const sharp = require('sharp');
 const User = require('../models/user');
 const auth = require('../middleware/auth');
 const upload = require('../middleware/upload');
+const {
+  sendWelcomeEmail,
+  sendCancellationEmail
+} = require('../emails/sendEmails');
 
 const router = new express.Router();
 
@@ -15,6 +19,8 @@ router.post('/users', async (req, res) => {
   try {
     const token = await user.generateAuthToken();
     await user.save();
+    // Send welcome email to new user
+    sendWelcomeEmail(user.name, user.email);
     // Token is sent back to store login creds on Postman
     res.status(201).send({ user, token });
   } catch (e) {
@@ -106,7 +112,9 @@ router.get('/users/me', auth, async (req, res) => {
 
 // GET /users/:id/avatar
 //
-// Read information about a user's avatar by user id
+// Serve up a user's avatar by user id
+// available at localhost:3000/users/:id/avatar
+// or replace localhost with hosting URL
 router.get('/users/:id/avatar', async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -156,6 +164,8 @@ router.delete('/users/me', auth, async (req, res) => {
     // Middleware occurs before remove() to delete tasks
     // with this owner
     await req.user.remove();
+    // Send cancellation email
+    sendCancellationEmail(req.user.name, req.user.email);
     res.send(req.user);
   } catch (error) {
     res.status(500).send();
