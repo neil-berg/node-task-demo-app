@@ -3,6 +3,7 @@ require('dotenv').config();
 // With Mongoose ------
 const express = require('express');
 require('./db/mongoose');
+const path = require('path');
 const userRouter = require('./routers/users');
 const taskRouter = require('./routers/tasks');
 
@@ -12,9 +13,18 @@ const port = process.env.port || process.env.PORT;
 // Automatically parse responses to JSON
 app.use(express.json());
 
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, 'client/build')));
+
 // Register routes with the express application
 app.use(userRouter);
 app.use(taskRouter);
+
+// The "catchall" handler: for any request that doesn't
+// match one above, send back React's index.html file.
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname + '/client/build/index.html'));
+});
 
 app.listen(port, () => {
   console.log(`Server is up on port:${port}`);
