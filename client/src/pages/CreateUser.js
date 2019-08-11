@@ -9,7 +9,7 @@ const CreateUser = () => {
     e.preventDefault();
     // Send POST request
     try {
-      await axios.post('http://localhost:3000/users', {
+      await axios.post('/users', {
         name,
         age: '13',
         email,

@@ -9,7 +9,7 @@ function App() {
     <div>
       <Router>
         <Route path="/" exact component={Index} />
-        <Route path="/users" component={CreateUser} />
+        <Route path="/signup" component={CreateUser} />
       </Router>
     </div>
   );
