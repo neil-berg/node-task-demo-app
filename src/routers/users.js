@@ -15,8 +15,6 @@ const router = new express.Router();
 router.get('/api/passwords', (req, res) => {
   // Return them as json
   res.json({ a: '1', b: '2' });
-
-  console.log(`Sent ${count} passwords`);
 });
 
 // POST /users

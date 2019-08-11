@@ -21,6 +21,7 @@ app.use(express.static(path.join(__dirname, '/../client/build')));
 app.use(userRouter);
 app.use(taskRouter);
 
+// Catchall to serve index page if no other page is found
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '/../client/build/index.html'));
 });
