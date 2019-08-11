@@ -8,13 +8,13 @@ const userRouter = require('./routers/users');
 const taskRouter = require('./routers/tasks');
 
 const app = express();
-const port = process.env.port || process.env.PORT;
+const port = process.env.PORT || 5000;
 
 // Automatically parse responses to JSON
 app.use(express.json());
 
-// Serve static files from the React app
-app.use(express.static(path.join(__dirname, 'client/build')));
+// Serve static files from the React app in task-manager/client/build
+app.use(express.static(path.join(__dirname, '/../client/build')));
 
 // Register routes with the express application
 app.use(userRouter);
@@ -22,9 +22,9 @@ app.use(taskRouter);
 
 // The "catchall" handler: for any request that doesn't
 // match one above, send back React's index.html file.
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname + '/client/build/index.html'));
-});
+// app.get('*', (req, res) => {
+//   res.sendFile(path.join(__dirname + '/client/build/index.html'));
+// });
 
 app.listen(port, () => {
   console.log(`Server is up on port:${port}`);
