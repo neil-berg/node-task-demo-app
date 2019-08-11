@@ -5,16 +5,37 @@ const CreateUser = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
 
+  const [user, setUser] = useState({});
+
   const handleSubmit = async e => {
     e.preventDefault();
-    // Send POST request
+
+    // Create new user in DB
     try {
-      await axios.post('/users', {
+      const res = await axios.post('/users', {
         name,
         age: '13',
         email,
         password: 'red1234!'
       });
+      // Save JWT in local storage
+      // Then query the token in local storage
+      // upon further API calls
+      localStorage.setItem('token', res.data.token);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getUserDetails = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await axios.get('/users/me', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      setUser(res.data);
     } catch (error) {
       console.log(error);
     }
@@ -46,6 +67,10 @@ const CreateUser = () => {
         </label>
         <button type="submit">Submit</button>
       </form>
+      <button onClick={getUserDetails}>Get Details</button>
+      <p>
+        {user.name}, {user.email}
+      </p>
     </div>
   );
 };

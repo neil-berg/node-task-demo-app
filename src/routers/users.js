@@ -26,7 +26,7 @@ router.post('/users', async (req, res) => {
     const token = await user.generateAuthToken();
     await user.save();
     // Send welcome email to new user
-    sendWelcomeEmail(user.name, user.email);
+    //sendWelcomeEmail(user.name, user.email);
     // Token is sent back to store login creds on Postman
     res.status(201).send({ user, token });
   } catch (e) {
