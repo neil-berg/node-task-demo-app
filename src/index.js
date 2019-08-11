@@ -4,6 +4,7 @@ require('dotenv').config();
 const express = require('express');
 require('./db/mongoose');
 const path = require('path');
+const ReactDOMServer = require;
 const userRouter = require('./routers/users');
 const taskRouter = require('./routers/tasks');
 
@@ -20,11 +21,9 @@ app.use(express.static(path.join(__dirname, '/../client/build')));
 app.use(userRouter);
 app.use(taskRouter);
 
-// The "catchall" handler: for any request that doesn't
-// match one above, send back React's index.html file.
-// app.get('*', (req, res) => {
-//   res.sendFile(path.join(__dirname + '/client/build/index.html'));
-// });
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '/../client/build/index.html'));
+});
 
 app.listen(port, () => {
   console.log(`Server is up on port:${port}`);
