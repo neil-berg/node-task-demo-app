@@ -8,8 +8,8 @@ function App() {
   return (
     <div>
       <Router>
-        <Route path="/" exact component={Index} />
-        <Route path="/signup" component={CreateUser} />
+        <Route path="/" exact component={CreateUser} />
+        <Route path="/signup" exact component={CreateUser} />
       </Router>
     </div>
   );
