@@ -26,7 +26,7 @@ router.post('/users', async (req, res) => {
     const token = await user.generateAuthToken();
     await user.save();
     // Send welcome email to new user
-    //sendWelcomeEmail(user.name, user.email);
+    sendWelcomeEmail(user.name, user.email);
     // Token is sent back to store login creds on Postman
     res.status(201).send({ user, token });
   } catch (e) {
@@ -174,7 +174,7 @@ router.delete('/users/me', auth, async (req, res) => {
     sendCancellationEmail(req.user.name, req.user.email);
     res.send(req.user);
   } catch (error) {
-    res.status(500).send();
+    res.status(401).send();
   }
 });
 

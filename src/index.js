@@ -1,30 +1,6 @@
-require('dotenv').config();
+const app = require('./app');
 
-// With Mongoose ------
-const express = require('express');
-require('./db/mongoose');
-const path = require('path');
-const ReactDOMServer = require;
-const userRouter = require('./routers/users');
-const taskRouter = require('./routers/tasks');
-
-const app = express();
 const port = process.env.PORT || 5000;
-
-// Automatically parse responses to JSON
-app.use(express.json());
-
-// Serve static files from the React app in task-manager/client/build
-app.use(express.static(path.join(__dirname, '/../client/build')));
-
-// Register routes with the express application
-app.use(userRouter);
-app.use(taskRouter);
-
-// Catchall to serve index page if no other page is found
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '/../client/build/index.html'));
-});
 
 app.listen(port, () => {
   console.log(`Server is up on port:${port}`);
