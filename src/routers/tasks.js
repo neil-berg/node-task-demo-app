@@ -4,7 +4,9 @@ const auth = require('../middleware/auth');
 
 const router = new express.Router();
 
-// Add task
+// POST /tasks
+//
+// Create new task
 router.post('/tasks', auth, async (req, res) => {
   // Append owner property onto new task object
   // where req.user was created by the auth middleware
@@ -67,6 +69,8 @@ router.get('/tasks', auth, async (req, res) => {
   }
 });
 
+// GET /tasks/:id
+//
 // Read one task by ID
 router.get('/tasks/:id', auth, async (req, res) => {
   const _id = await req.params.id;
@@ -82,12 +86,27 @@ router.get('/tasks/:id', auth, async (req, res) => {
   }
 });
 
+// PATCH /tasks/:id
+//
 // Update task by ID
 router.patch('/tasks/:id', auth, async (req, res) => {
   // Ensure valid properties are being updated
-  const validUpdates = ['description', 'completed'];
-  const updates = Object.keys(req.body);
-  const isValidUpdate = updates.every(update => validUpdates.includes(update));
+  const validProperties = ['description', 'completed'];
+  const properties = Object.keys(req.body);
+  const isValidProperties = properties.every(property =>
+    validProperties.includes(property)
+  );
+
+  // Ensure that values for properties are valid
+  let isValidValues;
+  if (req.body.hasOwnProperty('completed')) {
+    isValidValues = typeof req.body.completed === 'boolean';
+  }
+  if (req.body.hasOwnProperty('description')) {
+    isValidValues = req.body.description.length > 0;
+  }
+
+  const isValidUpdate = isValidProperties && isValidValues;
 
   if (!isValidUpdate) {
     return res.status(400).send({ error: 'Invalid update' });
@@ -103,7 +122,7 @@ router.patch('/tasks/:id', auth, async (req, res) => {
       return res.status(404).send();
     }
 
-    updates.forEach(update => (task[update] = req.body[update]));
+    properties.forEach(property => (task[property] = req.body[property]));
     await task.save();
 
     res.send(task);
@@ -112,6 +131,8 @@ router.patch('/tasks/:id', auth, async (req, res) => {
   }
 });
 
+// DELETE /tasks/:id
+//
 // Delete task by ID
 router.delete('/tasks/:id', auth, async (req, res) => {
   try {
